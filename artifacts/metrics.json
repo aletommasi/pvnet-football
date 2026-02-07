@@ -1,0 +1,89 @@
+{
+  "test_loss": 0.09106591338490738,
+  "metrics": {
+    "shot": {
+      "roc_auc": 0.8106440117065675,
+      "pr_auc": 0.2679699815229988,
+      "log_loss": 0.156036838878529,
+      "brier": 0.03970680218362533,
+      "pos_rate": 0.047444969579862654
+    },
+    "goal": {
+      "roc_auc": 0.8243300602708098,
+      "pr_auc": 0.052436314177863486,
+      "log_loss": 0.026094987926907336,
+      "brier": 0.004639358393673229,
+      "pos_rate": 0.004765386322688461
+    }
+  },
+  "calibration": {
+    "shot": {
+      "mean_pred": [
+        0.029709648168705582,
+        0.13409836380702553,
+        0.24656173357146596,
+        0.33934448779956955,
+        0.4459227140902019,
+        0.5453068412119343,
+        0.6483896728289329,
+        0.7125544585287571
+      ],
+      "frac_pos": [
+        0.02511353315168029,
+        0.12121212121212122,
+        0.2346588119783996,
+        0.33294255568581477,
+        0.4634146341463415,
+        0.5645161290322581,
+        0.788135593220339,
+        0.9375
+      ]
+    },
+    "goal": {
+      "mean_pred": [
+        0.0049869604697042585,
+        0.12350214711360392,
+        0.20228876173496246
+      ],
+      "frac_pos": [
+        0.00453778655402843,
+        0.13709677419354838,
+        1.0
+      ]
+    }
+  },
+  "config": {
+    "K_FUTURE_EVENTS": 10,
+    "TRAIN_FRAC": 0.7,
+    "VAL_FRAC": 0.15,
+    "TEST_FRAC": 0.15,
+    "RANDOM_SEED": 42,
+    "HIDDEN_DIM": 128,
+    "DROPOUT": 0.15,
+    "BATCH_SIZE": 4096,
+    "LR": 0.001,
+    "WEIGHT_DECAY": 0.0001,
+    "EPOCHS": 12,
+    "EARLY_STOPPING_PATIENCE": 3,
+    "PROJECT_ROOT": "/content/drive/MyDrive/pvnet-football",
+    "ARTIFACTS_DIR": "/content/drive/MyDrive/pvnet-football/artifacts"
+  },
+  "feature_cols": [
+    "start_x",
+    "start_y",
+    "end_x",
+    "end_y",
+    "dist_to_goal",
+    "angle_to_goal_center",
+    "dx",
+    "dy",
+    "progress_x",
+    "time_seconds",
+    "is_pass",
+    "is_carry",
+    "is_dribble",
+    "is_shot",
+    "pass_success",
+    "dribble_success"
+  ]
+}
