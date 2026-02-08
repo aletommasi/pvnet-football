@@ -14,6 +14,16 @@ PVNet aims to demonstrate a full end-to-end football analytics pipeline suitable
 
 ---
 
+## Input Data Type
+
+PVNet operates on **event data**, not video footage.
+
+Each match is represented as a sequence of events such as passes, carries, shots, recoveries, and defensive actions, including spatial and temporal information.
+
+The model does not process video directly; instead, video analysis tools or data providers are used to generate event datasets.
+
+---
+
 ## Project Motivation
 
 Traditional football statistics focus on final outcomes:
@@ -101,41 +111,32 @@ These features describe the state of possession at each action.
 
 ## Model Objective
 
-The neural network predicts:
+For each event in a possession sequence, the model predicts:
 
-P(shot in next K events)
-P(goal in next K events)
+- probability that a **shot occurs within the next K events**
+- probability that a **goal occurs within the next K events**
 
+where **K = 10 events** in the current configuration.
 
-where K is a configurable future window.
+This allows the model to estimate how dangerous the current possession state is.
 
-Thus, the model learns patterns indicating when possession sequences become dangerous.
+Labels are generated automatically by scanning future events within the same possession and checking whether a shot or goal occurs.
 
 ---
 
 ## Action Value Formula
 
-For each action, PVNet computes:
+The value of an action is defined as the change in attacking potential:
 
-Action Value = ΔP(shot) + w_goal * ΔP(goal)
+Action Value = (P_shot_after − P_shot_before)
++ w_goal × (P_goal_after − P_goal_before)
 
 where:
 
-ΔP(shot) = P_after_shot − P_before_shot
-ΔP(goal) = P_after_goal − P_before_goal
+- probabilities are predicted by the model
+- w_goal = 5.0 weights goal probability more heavily than shot probability
 
-
-and `w_goal` weights goal probability higher than shot probability.
-
-Positive values mean the action increases attacking potential.
-
-Negative values mean possession becomes less dangerous.
-
----
-
-**Configuration used in this project**
-- Future window: **K = 10** events  
-- Goal weighting: **w_goal = 5.0**
+Positive values indicate actions that increase attacking danger, while negative values indicate loss of attacking potential.
 
 ---
 
@@ -161,13 +162,13 @@ The Streamlit dashboard allows analysts to explore:
 
 ---
 
-## Current Limitation: Test Set Dashboard
+## Current Limitation: Dashboard Uses Test Predictions
 
-Currently, the dashboard displays predictions generated on the **test dataset** used during model evaluation.
+The dashboard currently visualizes predictions computed on the held-out test dataset used for model evaluation.
 
-This means the dashboard is static and does not yet process new matches automatically.
+This allows consistent visualization and benchmarking but does not yet include automatic ingestion of new matches.
 
-However, the trained model can be applied to new match data to generate new predictions and update the dashboard.
+However, the trained model can be applied to new matches as long as event data are available and processed through the same preprocessing pipeline.
 
 ---
 
@@ -256,18 +257,19 @@ Therefore, PVNet supports analysis but does not replace expert judgement.
 
 ---
 
-### Applying PVNet to New Matches (future extension)
+## Applying PVNet to New Matches
 
-PVNet can be applied to unseen matches without retraining. The required steps are:
+PVNet can analyze new matches without retraining the model.
 
-1. Load event data for the new match (same schema as the training source).
-2. Run the **same preprocessing + feature engineering** pipeline (`basic_clean`, `build_features`).
-3. Load the saved `scaler.joblib` and standardize features.
-4. Load `model.pth` and compute `p_shot` and `p_goal`.
-5. Compute action values using the same formula and export to `artifacts/test_predictions.parquet`.
-6. Restart the dashboard to visualize the new match.
+Required steps:
 
-This pipeline is not automated yet in the current version, but it can be implemented as a `predict_match.py` script.
+1. Obtain event data for the match.
+2. Apply the same preprocessing and feature engineering steps.
+3. Load trained model and scaler.
+4. Compute probabilities and action values.
+5. Export predictions in dashboard format.
+
+In professional environments, these event datasets are typically provided by commercial providers such as Wyscout, Opta, or StatsBomb.
 
 ---
 
