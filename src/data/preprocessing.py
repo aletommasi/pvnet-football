@@ -10,7 +10,7 @@ def _to_float(series: pd.Series) -> pd.Series:
 
 def basic_clean(events: pd.DataFrame) -> pd.DataFrame:
     """
-    Pulisce e crea colonne minime, ordina eventi per match/period/index.
+    Cleans and creates minimal columns, sorts events by match/period/index.
     """
     df = events.copy()
 

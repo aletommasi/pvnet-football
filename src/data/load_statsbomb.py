@@ -8,8 +8,8 @@ def load_competition_events(
     include_freeze_frame: bool = False
 ) -> pd.DataFrame:
     """
-    Carica eventi StatsBomb per una competition+season in un unico dataframe.
-    Aggiunge match_id.
+    Loads StatsBomb events for a competition and season into a single dataframe.
+    Adds match_id.
     """
     matches = sb.matches(competition_id=competition_id, season_id=season_id)
     match_ids = matches["match_id"].tolist()
@@ -22,7 +22,7 @@ def load_competition_events(
 
     events = pd.concat(all_events, ignore_index=True)
 
-    # freeze_frame è enorme: di default lo rimuoviamo
+    # freeze_frame is huge: we remove it by default to save memory and speed up processing.
     if not include_freeze_frame:
         for col in list(events.columns):
             if "freeze_frame" in col:

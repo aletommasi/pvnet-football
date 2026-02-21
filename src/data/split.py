@@ -4,7 +4,7 @@ import pandas as pd
 
 def split_by_match(df: pd.DataFrame, train_frac=0.70, val_frac=0.15, test_frac=0.15, seed=42):
     """
-    Split per match_id (anti leakage).
+    Split per match_id.
     """
     assert abs(train_frac + val_frac + test_frac - 1.0) < 1e-6
 

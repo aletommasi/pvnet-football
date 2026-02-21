@@ -45,21 +45,43 @@ def plot_action_arrows(
 ):
     """
     Draw arrows from start->end for the most impactful actions.
+
     Improvements:
       - filter by sign (positive/negative/both)
       - filter by minimum magnitude
       - top-N by magnitude
       - color: green (positive), red (negative)
       - linewidth proportional to |value|
+      - FIX: remove suspicious end points pinned to pitch borders (e.g., end_x=0)
+             especially when the movement length is very large (artifact).
     """
     if df is None or len(df) == 0:
         return
 
     d = df.copy()
 
-    # Need end_x/end_y for arrows
-    d = d[d["end_x"].notna() & d["end_y"].notna() & d["start_x"].notna() & d["start_y"].notna()]
-    d = d[d[value_col].notna()]
+    # Need start/end coords and value
+    d = d[
+        d["end_x"].notna()
+        & d["end_y"].notna()
+        & d["start_x"].notna()
+        & d["start_y"].notna()
+        & d[value_col].notna()
+    ]
+
+    if len(d) == 0:
+        return
+
+    # -------------------------
+    # FIX: remove border endpoints (corner/throw-in artifacts)
+    # -------------------------
+    eps = 0.8  # tolerance around borders (increase if needed)
+
+    d = d[
+        (d["end_x"] > eps) & (d["end_x"] < PITCH_LENGTH - eps) &
+        (d["end_y"] > eps) & (d["end_y"] < PITCH_WIDTH - eps)
+    ]
+
 
     if len(d) == 0:
         return
@@ -80,7 +102,7 @@ def plot_action_arrows(
     if len(d) == 0:
         return
 
-    # Pick top N by magnitude (not by raw value)
+    # Pick top N by magnitude
     if len(d) > int(max_arrows):
         d = d.reindex(d[value_col].abs().sort_values(ascending=False).index).head(int(max_arrows))
 
@@ -107,7 +129,6 @@ def plot_action_arrows(
                 alpha=alpha,
             ),
         )
-
 
 def heatmap_value(
     ax,

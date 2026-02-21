@@ -4,9 +4,9 @@ import pandas as pd
 
 def add_future_labels(df: pd.DataFrame, k: int = 10) -> pd.DataFrame:
     """
-    Per ogni evento in un possesso (match_id, possession):
-      - shot_within_k = 1 se entro i prossimi k eventi del possesso compare uno Shot
-      - goal_within_k = 1 se entro i prossimi k eventi compare uno Shot con shot_outcome == "Goal"
+    For each possession event (match_id, possession):
+      - shot_within_k = 1 if a shot occurs within the next k possession events
+      - goal_within_k = 1 if a shot occurs within the next k events with shot_outcome == "Goal"
     """
     out = df.copy()
     out["is_shot_event"] = (out["type_name"] == "Shot").astype(int)
